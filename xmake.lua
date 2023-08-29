@@ -33,10 +33,10 @@ if lambda then
   end
 end
 
--- add_requires('libbacktrace')
-
 --- Project common header file path
 add_includedirs('$(projectdir)/src')
+
+set_targetdir('.')
 
 --- main target
 target('dump', function()
