@@ -33,6 +33,8 @@ if lambda then
   end
 end
 
+add_requires('fmt')
+
 --- Project common header file path
 add_includedirs('$(projectdir)/src')
 
@@ -48,12 +50,14 @@ target('dump', function()
 
   add_ldflags('-static')
   add_links('dwarf++', 'elf++')
+
+  add_packages('fmt')
 end)
 
 target('hello', function()
   set_kind('binary')
   add_files('$(projectdir)/src/hello.c')
 
-  set_strip('all')
+  -- set_strip('all')
   add_cflags('-gdwarf-4')
 end)
