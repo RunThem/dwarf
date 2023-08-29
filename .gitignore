@@ -149,5 +149,9 @@ build/
 CMakeLists.txt
 compile_commands.json
 
+dump
+hello
+hello.sym
+
 # clibs
 clib/
