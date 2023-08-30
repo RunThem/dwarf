@@ -9,7 +9,7 @@ set_xmakever('2.6.1')
 add_plugindirs('.plugins')
 
 --- Build mode
-add_rules('mode.debug', 'mode.release')
+add_rules('mode.debug')
 
 --- Macro definition
 add_defines('_GNU_SOURCE=1')
@@ -33,7 +33,7 @@ if lambda then
   end
 end
 
-add_requires('fmt', 'lexy', 'dbg-macro')
+add_requires('fmt', 'lexy', 'dbg-macro', { system = false })
 
 --- Project common header file path
 add_includedirs('$(projectdir)/src')
@@ -52,6 +52,10 @@ target('dump', function()
   add_links('dwarf++', 'elf++')
 
   add_packages('fmt', 'lexy', 'dbg-macro')
+
+  before_run(function(T)
+    T:set('runargs', 'hello')
+  end)
 end)
 
 target('hello', function()
@@ -60,4 +64,5 @@ target('hello', function()
 
   -- set_strip('all')
   add_cflags('-gdwarf-4')
+  add_ldflags('-static')
 end)
