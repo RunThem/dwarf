@@ -18,7 +18,7 @@ add_defines('_GNU_SOURCE=1')
 set_warnings('all', 'error')
 
 --- Language standard
-add_languages('clatest', 'cxxlatest')
+add_languages('clatest', 'c++20')
 
 --- Unused variables and functions
 add_cflags('-Wno-unused-function', '-Wno-unused-variable')
@@ -33,7 +33,7 @@ if lambda then
   end
 end
 
-add_requires('fmt', 'lexy')
+add_requires('fmt', 'lexy', 'dbg-macro')
 
 --- Project common header file path
 add_includedirs('$(projectdir)/src')
@@ -51,7 +51,7 @@ target('dump', function()
   add_ldflags('-static')
   add_links('dwarf++', 'elf++')
 
-  add_packages('fmt', 'lexy')
+  add_packages('fmt', 'lexy', 'dbg-macro')
 end)
 
 target('hello', function()

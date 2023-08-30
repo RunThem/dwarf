@@ -1,9 +1,17 @@
-#include <cinttypes>
 #include <fcntl.h>
+#include <string>
+#include <typeinfo>
+
+/* deps */
+#include <dbg.h>
 #include <fmt/core.h>
+#include <lexy/action/parse.hpp>
+#include <lexy/callback.hpp>
+#include <lexy/dsl.hpp>
+#include <lexy/input/argv_input.hpp>
+#include <lexy_ext/report_error.hpp>
 #include <libelfin/dwarf/dwarf++.hh>
 #include <libelfin/elf/elf++.hh>
-#include <string>
 
 using namespace std;
 
@@ -25,7 +33,8 @@ void dump_tree(const dwarf::die& node, int depth = 0) {
 }
 
 int main(int argc, const char* argv[]) {
-  int fd = 0;
+#if 0
+  std::int32_t fd = 0;
 
   fd = open(argv[1], O_RDONLY);
   if (fd < 0) {
@@ -41,6 +50,7 @@ int main(int argc, const char* argv[]) {
 
     dump_tree(cu.root());
   }
+#endif
 
   return 0;
 }
