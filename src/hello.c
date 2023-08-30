@@ -1,5 +1,3 @@
-
-
 enum en {
   S_INIT,
   S_START,
@@ -9,34 +7,21 @@ enum en {
 struct st {
   int nems;
   char* msg;
+  enum en e;
 };
 
 typedef struct {
   int a;
   char c;
+
+  struct st st;
 } st_t;
 
-void boo() {
-  enum en e = S_INIT;
-}
-
-void foo() {
-  boo();
-}
-
 int main(int argc, const char** argv) {
-  int a   = 0;
-  st_t st = {0};
-
   struct {
     int d;
-    union {
-      int l;
-      int* ptr;
-    };
+    st_t st;
   } anonymity_st = {0};
-
-  foo();
 
   return 0;
 }
