@@ -1,30 +1,34 @@
+/* clang-format off */
 #include <fcntl.h>
 #include <string>
 #include <typeinfo>
 
-/* deps */
 #include <dbg.h>
+
 #include <fmt/core.h>
+
 #include <lexy/action/parse.hpp>
 #include <lexy/callback.hpp>
 #include <lexy/dsl.hpp>
 #include <lexy/input/argv_input.hpp>
 #include <lexy_ext/report_error.hpp>
+
 #include <libelfin/dwarf/dwarf++.hh>
 #include <libelfin/elf/elf++.hh>
+#include <libelfin/dwarf/data.hh>
+/* clang-format on */
 
 using namespace std;
 
 void dump_tree(const dwarf::die& node, int depth = 0) {
-  if (to_string(node.tag) == "DW_TAG_variable") {
-    fmt::println("{}<{}> {}", depth, node.get_section_offset(), to_string(node.tag));
+  if (node.tag == dwarf::DW_TAG::structure_type) {
+    fmt::println("{} <{:x}> {}", depth, node.get_section_offset(), to_string(node.tag));
 
-    for (auto& attr : node.attributes()) {
-      fmt::println("{}      {} {}",
-                   string(depth, ' '),
-                   to_string(attr.first),
-                   to_string(attr.second));
-    }
+    auto sib = node[dwarf::DW_AT::sibling];
+    fmt::println("sib is <{:x}> {}", sib.get_section_offset(), to_string(sib));
+
+    auto ref = sib.as_reference();
+    fmt::println("ref is <{:x}> {}", ref.get_section_offset(), to_string(ref.tag));
   }
 
   for (auto& child : node) {
@@ -33,7 +37,6 @@ void dump_tree(const dwarf::die& node, int depth = 0) {
 }
 
 int main(int argc, const char* argv[]) {
-#if 0
   std::int32_t fd = 0;
 
   fd = open(argv[1], O_RDONLY);
@@ -50,7 +53,6 @@ int main(int argc, const char* argv[]) {
 
     dump_tree(cu.root());
   }
-#endif
 
   return 0;
 }
