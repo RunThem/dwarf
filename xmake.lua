@@ -1,12 +1,12 @@
---- xmake configure
-set_xmakever('2.6.1')
-add_plugindirs('.plugins')
-
 --- Project name
 set_project('dwarf')
 
 --- Project version
 set_version('0.0.1')
+
+--- xmake configure
+set_xmakever('2.6.1')
+add_plugindirs('.plugins')
 
 --- Build mode
 add_rules('mode.debug', 'mode.release')
@@ -17,8 +17,8 @@ add_defines('_GNU_SOURCE=1')
 --- No warning
 set_warnings('all', 'error')
 
---- Build C flags
-add_cflags('-std=gnu2x')
+--- Language standard
+add_languages('clatest', 'cxxlatest')
 
 --- Unused variables and functions
 add_cflags('-Wno-unused-function', '-Wno-unused-variable')
@@ -33,7 +33,7 @@ if lambda then
   end
 end
 
-add_requires('fmt')
+add_requires('fmt', 'lexy')
 
 --- Project common header file path
 add_includedirs('$(projectdir)/src')
@@ -51,7 +51,7 @@ target('dump', function()
   add_ldflags('-static')
   add_links('dwarf++', 'elf++')
 
-  add_packages('fmt')
+  add_packages('fmt', 'lexy')
 end)
 
 target('hello', function()
