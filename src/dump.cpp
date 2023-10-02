@@ -6,12 +6,13 @@
 #include <dbg.h>
 
 #include <fmt/core.h>
+#include <assert.h>
 
-#include <lexy/action/parse.hpp>
-#include <lexy/callback.hpp>
-#include <lexy/dsl.hpp>
-#include <lexy/input/argv_input.hpp>
-#include <lexy_ext/report_error.hpp>
+// #include <lexy/action/parse.hpp>
+// #include <lexy/callback.hpp>
+// #include <lexy/dsl.hpp>
+// #include <lexy/input/argv_input.hpp>
+// #include <lexy_ext/report_error.hpp>
 
 #include <libelfin/dwarf/dwarf++.hh>
 #include <libelfin/elf/elf++.hh>
@@ -20,19 +21,46 @@
 
 using namespace std;
 
-void dump_tree(const dwarf::die& node, int depth = 0) {
-  if (node.tag == dwarf::DW_TAG::structure_type) {
-    fmt::println("{} <{:x}> {}", depth, node.get_section_offset(), to_string(node.tag));
+void dump_enum(const dwarf::die& node) {
+  assert(node.tag == dwarf::DW_TAG::enumeration_type);
 
-    auto sib = node[dwarf::DW_AT::sibling];
-    fmt::println("sib is <{:x}> {}", sib.get_section_offset(), to_string(sib));
+  fmt::println("static void __dbg_dump_enum_{}(enum {}* _) {{", at_name(node), at_name(node));
+  fmt::println("  switch (*_) {{");
 
-    auto ref = sib.as_reference();
-    fmt::println("ref is <{:x}> {}", ref.get_section_offset(), to_string(ref.tag));
+  for (auto& child : node) {
+    fmt::println(R"(    case {}:
+      puts("({}){}"); break;)",
+                 at_name(child),
+                 at_const_value(child).as_sconstant(),
+                 at_name(child));
+  }
+
+  fmt::println("    default: break;");
+  fmt::println("  }}");
+  fmt::println("}}");
+}
+
+void dump_struct(const dwarf::die& node) {
+  assert(node.tag == dwarf::DW_TAG::structure_type);
+
+  fmt::println("static void __dbg_dump_struct_{}(struct {}* _) {{", at_name(node), at_name(node));
+
+
+
+  fmt::println("}}");
+}
+
+void foreach_all_die(const dwarf::die& node) {
+  switch (node.tag) {
+    case dwarf::DW_TAG::enumeration_type:
+      dump_enum(node);
+      break;
+    default:
+      break;
   }
 
   for (auto& child : node) {
-    dump_tree(child, depth + 1);
+    foreach_all_die(child);
   }
 }
 
@@ -48,10 +76,10 @@ int main(int argc, const char* argv[]) {
   elf::elf ef(elf::create_mmap_loader(fd));
   dwarf::dwarf dw(dwarf::elf::create_loader(ef));
 
-  for (const auto& cu : dw.compilation_units()) {
-    fmt::println("--- <{}>", cu.get_section_offset());
+  auto units = dw.compilation_units();
 
-    dump_tree(cu.root());
+  for (const auto& cu : units) {
+    foreach_all_die(cu.root());
   }
 
   return 0;

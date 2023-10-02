@@ -33,7 +33,7 @@ if lambda then
   end
 end
 
-add_requires('fmt', 'lexy', 'dbg-macro', { system = false })
+add_requires('fmt', 'dbg-macro', { system = false })
 
 --- Project common header file path
 add_includedirs('$(projectdir)/src')
@@ -51,7 +51,11 @@ target('dump', function()
   add_ldflags('-static')
   add_links('dwarf++', 'elf++')
 
-  add_packages('fmt', 'lexy', 'dbg-macro')
+  add_cflags('-ggdb')
+
+  add_packages('fmt', 'dbg-macro')
+
+  set_runargs('hello')
 
   before_run(function(T)
     T:set('runargs', 'hello')
